@@ -56,7 +56,6 @@ class System:
                 'winner': None
             },
         }
-        self.userid = userid
 
     def __upd(self):
         self.__catsessions['1']['price'] = 200  # API

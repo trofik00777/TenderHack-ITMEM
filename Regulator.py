@@ -6,7 +6,7 @@ from Player import Player
 class Regulator:
     def __init__(self, system, userid):
         self.system = system
-        self.userid
+        self.userid = userid
         self.threads = []
 
     def play(self, id, price, timedelta):  # асинхронная
