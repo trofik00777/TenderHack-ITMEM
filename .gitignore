@@ -4,3 +4,4 @@ _*.py
 *Test*.*
 *test*/
 *Test*/
+.DS_Store
