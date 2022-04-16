@@ -1,8 +1,8 @@
-from _datetime import datetime
-
+from datetime import datetime
+from time import sleep
 
 class Player:
-    def __init__(self, id, minprice, timetoend, system):
+    def __init__(self, id: str, minprice: str, timetoend: str, system):
         self.id = id
         self.minprice = minprice
         self.timetoend = timetoend
@@ -11,9 +11,6 @@ class Player:
 
     def play(self):
         data = self.system.getItem(self.id)
-        print("-----")
-        print(data)
-        print('-----')
         version = data['rowVersion']
         try:
             winner = data['bets'][0]['supplier']['id']  # if null not we
@@ -31,18 +28,21 @@ class Player:
                 return 1
             else:
                 return 2
-        if (price > self.minprice):
-            if (timedelta < self.timetoend):
-                if(winner==None):
+        if (float(price) >= float(self.minprice)):
+            if (timedelta <= float(self.timetoend)):
+                if (winner == None):
                     print("Stavka sdelana")
+                    sleep(5)
                     self.system.getBet(self.id, version, cost)
-                    return 3
                 else:
                     print("we uzhe postavili")
-                    return 0
+                    sleep(10)
+                return 0
             else:
                 print("sleep")
+                sleep(5)
                 return 0
         else:
             print("we don't need it...")
+            sleep(5)
             return 2

@@ -2,7 +2,7 @@ import requests
 
 
 class System:
-    def __init__(self, login, password):
+    def __init__(self, login: str, password: str):
         self.active = 1
         self.session = requests.Session()
         resp = self.session.get("https://old.edu.pp24.dev/api/Cssp/Authentication/BeginAuthentication?type=Password")
@@ -10,7 +10,7 @@ class System:
         token = token[1:-1]
         self.__login(password, login, token)
 
-    def __login(self, password, login, token):
+    def __login(self, password: str, login: str, token: str):
         url = "https://old.edu.pp24.dev/api/Cssp/Authentication/PerformAuthentication"
         data = {"token": token, "operation": "LogIn",
                 "argument": {"values": {"login": f"{login}", "password": f"{password}"}}}
@@ -19,23 +19,23 @@ class System:
         if (resp['isSessionComplete'] == True):
             print("We succesfully login")
             url = "https://old.edu.pp24.dev/api/Cssp/Authentication/CheckAuthentication"
-            resp = self.session.get(url) # work with this!
+            resp = self.session.get(url)  # work with this!
             resp = resp.json()
             print(resp)
         else:
             print("Something wrong with login =(")
 
-    def getItem(self, id):
+    def getItem(self, id: str):
         URL = f"https://edu.pp24.dev/newapi/api/Auction/Get?auctionId={id}"
         response = self.session.get(URL)
-        response = response.json() # work with this!
+        response = response.json()  # work with this!
         return response
 
-    def getBet(self, id, rowversion, value):
+    def getBet(self, id: str, rowversion: str, value: str):
         url = "https://edu.pp24.dev/newapi/api/Auction/CreateBet"
         data = {
             'auctionId': id,
             'rowVersion': rowversion,
             'value': value
         }
-        resp = self.session.post(url, json=data) # work this!
+        resp = self.session.post(url, json=data)  # work this!
