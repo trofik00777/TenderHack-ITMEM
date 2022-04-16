@@ -1,0 +1,50 @@
+{
+    '0' : {
+        'status' : 0
+        'time' : 360,
+        'price' : 1000,
+        'last_price' : 1000, 
+        'procent' : 0.1,
+        'winner' : null
+    },
+    '1' : {
+        'status' : 0
+        'time' : 1000,
+        'price' : 2475,
+        'last_price' : 2475, 
+        'procent' : 1.5,
+        'winner' : null
+    },
+    '2' : {
+        'status' : 0
+        'time' : 834,
+        'price' : 774,
+        'last_price' : 774, 
+        'procent' : 2.0,
+        'winner' : null
+    },
+    '3' : {
+        'status' : 0
+        'time' : 243,
+        'price' : 1378,
+        'last_price' : 1378, 
+        'procent' : 1.37,
+        'winner' : null
+    },
+    '4' : {
+        'status' : 0
+        'time' : 133,
+        'price' : 937,
+        'last_price' : 937, 
+        'procent' : 2.7,
+        'winner' : null
+    },
+    '5' : {
+        'status' : 0
+        'time' : 3600,
+        'price' : 5001,
+        'last_price' : 5001, 
+        'procent' : 3.5,
+        'winner' : null
+    },
+}
