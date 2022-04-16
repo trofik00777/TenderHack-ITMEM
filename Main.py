@@ -4,7 +4,7 @@ from System import System
 
 def main():
     system = System()
-    regulator = Regulator(system)
+    regulator = Regulator(system, 1)
     while (True):
         id = input("Input id of cat session\n")
         price = int(input("Input price of cat session\n"))
