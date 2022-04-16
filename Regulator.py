@@ -4,13 +4,14 @@ from Player import Player
 
 
 class Regulator:
-    def __init__(self, system):
+    def __init__(self, system, userid):
         self.system = system
+        self.userid
         self.threads = []
 
     def play(self, id, price, timedelta):  # асинхронная
         result = 0
-        player = Player(id, price, timedelta, self.system)
+        player = Player(id, price, timedelta, self.system, self.userid)
         while (result == 0):
             result = player.play()
         print(f"Result of session id {id} is {result}")

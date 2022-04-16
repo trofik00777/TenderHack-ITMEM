@@ -1,10 +1,11 @@
 class Player:
-    def __init__(self, id, minprice, timetoend, system):
+    def __init__(self, id, minprice, timetoend, system, userid):
         self.id = id
         self.minprice = minprice
         self.timetoend = timetoend
         self.status = 0  # 0 - в ожидание, 1 - выйгран, 2 - проигран
         self.system = system
+        self.userid = userid
 
     def play(self):
         data = self.system.getItem(self.id)
@@ -14,7 +15,7 @@ class Player:
         price = data['price']
         procent = data['procent']
         if(status==1):
-            if(winner == self.system.userid):
+            if(winner == self.userid):
                 return 1
             elif(winner!=None):
                 return 2

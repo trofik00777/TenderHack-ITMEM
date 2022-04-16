@@ -3,7 +3,7 @@ from System import System
 
 
 def main():
-    system = System(228)
+    system = System()
     regulator = Regulator(system)
     while (True):
         id = input("Input id of cat session\n")

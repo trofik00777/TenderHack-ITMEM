@@ -1,5 +1,5 @@
 class System:
-    def __init__(self, userid):
+    def __init__(self):
         self.__catsessions = {
             '0': {
                 'status': 0,
@@ -42,7 +42,8 @@ class System:
                 'time': 133,
                 'price': 937,
                 'last_price': 937,
-                'procent': 2.7,
+                'procent': 0.001,
+                'who_last_send': None,
                 'winner': None
             },
             '5': {
@@ -50,7 +51,7 @@ class System:
                 'time': 3600,
                 'price': 5001,
                 'last_price': 5001,
-                'procent': 3.5,
+                'procent': 0.001,
                 'who_last_send': None,
                 'winner': None
             },
