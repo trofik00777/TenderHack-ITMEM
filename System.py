@@ -1,5 +1,8 @@
 import requests
 
+from Sender import Sender
+
+
 class System:
     @staticmethod
     def __checkNet():  # проверяем работает ли интернет
@@ -9,41 +12,73 @@ class System:
         except requests.ConnectionError:
             return 0  # не работает
 
-    def __init__(self, login: str, password: str):
+    def __init__(self, login: str, password: str, receive_mail, log: bool = False):
         self.active = 1
+        self.log = log
         self.session = requests.Session()
-        resp = self.session.get("https://old.edu.pp24.dev/api/Cssp/Authentication/BeginAuthentication?type=Password")
+        self.sender = Sender(receive_mail)
+        if self.log:
+            print("Start login in account")
+        while True:
+            if self.__checkNet():
+                resp = self.session.get(
+                    "https://old.edu.pp24.dev/api/Cssp/Authentication/BeginAuthentication?type=Password")
+                if self.log:
+                    print(resp)
+                break
+            if self.log:
+                print("Problem with internet")
         token = resp.text
         token = token[1:-1]
         self.error = self.__login(password, login, token)
+        if self.error == 0:
+            print("Succesfully login")
+        else:
+            print("Unseccusfully login")
 
     # 0 - successful, -1 - error
     def __login(self, password: str, login: str, token: str):
         url = "https://old.edu.pp24.dev/api/Cssp/Authentication/PerformAuthentication"
         data = {"token": token, "operation": "LogIn",
                 "argument": {"values": {"login": f"{login}", "password": f"{password}"}}}
-        resp = self.session.post(url, json=data)  # work with this!
+        while True:
+            if self.__checkNet():
+                resp = self.session.post(url, json=data)  # work with this!
+                break
+            if self.log:
+                print("Problem with internet")
         resp = resp.json()
         if (resp['isSessionComplete'] == True):
             url = "https://old.edu.pp24.dev/api/Cssp/Authentication/CheckAuthentication"
-            resp = self.session.get(url)  # work with this!
+            while True:
+                if self.__checkNet():
+                    resp = self.session.get(url)
+                    break
+                if self.log:
+                    print("Problem with internet")
             resp = resp.json()
-            print(resp)
             if (resp['isAuthenticated'] == False):
-                print("failed to login")
+                if self.log:
+                    print("Failed login")
                 return -1
-            print("We succesfully login")
+            if self.log:
+                print("We succesfully login")
             return 0
         else:
-            print("Something wrong with login =(")
+            if self.log:
+                print("Something went wrong")
             return -1
 
     def getItem(self, id: str):
         URL = f"https://edu.pp24.dev/newapi/api/Auction/Get?auctionId={id}"
-        response = self.session.get(URL)
-        response = response.json()  # work with this!
-        print(response)
-        return response
+        while True:
+            if self.__checkNet():
+                resp = self.session.get(URL)
+                break
+            if self.log:
+                print("Problem with internet")
+        resp = resp.json()  # work with this!
+        return resp
 
     def getBet(self, id: str, rowversion: str, value: str):
         url = "https://edu.pp24.dev/newapi/api/Auction/CreateBet"
@@ -56,4 +91,5 @@ class System:
             if self.__checkNet():
                 resp = self.session.post(url, json=data)  # work this!
                 break
-            print("not available site")
+            if self.log:
+                print("Problem with internet")

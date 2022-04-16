@@ -12,7 +12,11 @@ class Player:
 
     def play(self):
         data = self.system.getItem(self.id)
-        print(data)
+        while data.get('message', '') == 'Необходимо пройти проверку':
+            sleep(10)
+            if self.system.log:
+                print("We are waiting")
+            data = self.system.getItem(self.id)
         version = data['rowVersion']
         bets = data['bets']
         if (len(bets) == 0):
@@ -34,11 +38,13 @@ class Player:
         if (float(price) >= float(self.minprice)):
             if (timedelta <= float(self.timetoend)):
                 if (winner == None):
-                    print("Stavka sdelana")
+                    if self.system.log:
+                        print("We need bit it!")
                     sleep(5)
                     self.system.getBet(self.id, version, cost)
                 else:
-                    print("we uzhe postavili")
+                    if self.system.log:
+                        print("We last player")
                     sleep(10)
                 return 0
             else:
@@ -46,6 +52,7 @@ class Player:
                 sleep(5)
                 return 0
         else:
-            print("we don't need it...")
+            if self.system.log:
+                print("This not for us")
             sleep(5)
             return 2
