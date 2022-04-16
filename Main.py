@@ -1,10 +1,12 @@
-from System import System
 from Regulator import Regulator
+from System import System
+
 
 def main():
-    login = "ppusersupplier@gmail.com"
+    login = "pp.user.supplier@gmail.com"
     password = "Ulcc1044"
-    system = System(login, password)
+    mail = "denchicez@gmail.com"
+    system = System(login, password, mail, log=True)
     if system.error != 0:
         print("end of program")
         return
