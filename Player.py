@@ -8,24 +8,26 @@ class Player:
 
     def play(self):
         data = self.system.getItem(self.id)
+        winner = data['winner']
         status = data['status']
         time = data['time']
         price = data['price']
         procent = data['procent']
+        if(status==1):
+            if(winner == self.system.userid):
+                return 1
+            elif(winner!=None):
+                return 2
         new_price = price - price * procent
-        if (status == 1):
-            return status
-        if (status == 0):
-            return status
         if (new_price > self.minprice):
             if (time < self.timetoend):
                 self.bid()
             else:
                 print("sleep")
-                # sleep
+                return 0
         else:
             print("we don't need it...")
-            return 0
+            return 2
 
     def bid(self):
         print("Поставил бабло")

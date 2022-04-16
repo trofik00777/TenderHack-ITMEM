@@ -1,17 +1,23 @@
+from multiprocessing import Process
+
 from Player import Player
 
 
 class Regulator:
-    def __init__(self, ids, system):
+    def __init__(self, system):
         self.system = system
-        self.players = []
-        for id in ids:
-            self.players.append(Player(id, 100, 5, system))
+        self.threads = []
 
-    def play(self): # асинхронная
-        while (len(self.players)):
-            for player in self.players:
-                player.play()
+    def play(self, id, price, timedelta):  # асинхронная
+        result = 0
+        player = Player(id, price, timedelta, self.system)
+        while (result == 0):
+            result = player.play()
+        print(f"Result of session id {id} is {result}")
+
 
     def newsession(self, id, price, timedelta):
-        self.players.append(Player(id, price, timedelta, self.system))
+        thread = Process(target=self.play, args=(id, price, timedelta))
+        thread.start()
+        thread.join()
+        self.threads.append(thread)
