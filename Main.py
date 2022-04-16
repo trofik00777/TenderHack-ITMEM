@@ -2,9 +2,12 @@ from System import System
 from Regulator import Regulator
 
 def main():
-    login = "pp.user.supplier@gmail.com"
+    login = "ppusersupplier@gmail.com"
     password = "Ulcc1044"
     system = System(login, password)
+    if system.error != 0:
+        print("end of program")
+        return
     regulator = Regulator(system)
     while (True):
         id = input("Input id of cat session\n")

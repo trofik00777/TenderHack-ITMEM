@@ -1,6 +1,7 @@
 from datetime import datetime
 from time import sleep
 
+
 class Player:
     def __init__(self, id: str, minprice: str, timetoend: str, system):
         self.id = id
@@ -11,11 +12,13 @@ class Player:
 
     def play(self):
         data = self.system.getItem(self.id)
+        print(data)
         version = data['rowVersion']
-        try:
-            winner = data['bets'][0]['supplier']['id']  # if null not we
-        except:
+        bets = data['bets']
+        if (len(bets) == 0):
             winner = None
+        else:
+            winner = data['bets'][0]['supplier']['id']
         status = data['state']['name']
         cost = data['nextCost']
         time = datetime.strptime(data['endDate'], "%d.%m.%Y %H:%M:%S")
