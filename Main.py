@@ -1,15 +1,17 @@
-from Regulator import Regulator
 from System import System
-
+from Regulator import Regulator
 
 def main():
-    system = System()
-    regulator = Regulator(system, 1)
+    login = "pp.user.supplier@gmail.com"
+    password = "Ulcc1044"
+    system = System(login, password)
+    regulator = Regulator(system)
     while (True):
         id = input("Input id of cat session\n")
-        price = int(input("Input price of cat session\n"))
-        timedelta = int(input("Input time to end cat session\n"))
+        price = input("Input price of cat session\n")
+        timedelta = input("Input time to end cat session\n")
         regulator.newsession(id, price, timedelta)
+
 
 if __name__ == '__main__':
     main()

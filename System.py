@@ -1,65 +1,41 @@
+import requests
+
+
 class System:
-    def __init__(self):
-        self.__catsessions = {
-            '0': {
-                'status': 0,
-                'time': 360,
-                'price': 1000,
-                'last_price': 1000,
-                'procent': 0.001,
-                'who_last_send': None,
-                'winner': None
-            },
-            '1': {
-                'status': 0,
-                'time': 1000,
-                'price': 2475,
-                'last_price': 2475,
-                'procent': 0.0005,
-                'who_last_send': None,
-                'winner': None
-            },
-            '2': {
-                'status': 0,
-                'time': 834,
-                'price': 774,
-                'last_price': 774,
-                'procent': 0.0005,
-                'who_last_send': None,
-                'winner': None
-            },
-            '3': {
-                'status': 0,
-                'time': 243,
-                'price': 1378,
-                'last_price': 1378,
-                'procent': 0.001,
-                'who_last_send': None,
-                'winner': None
-            },
-            '4': {
-                'status': 0,
-                'time': 133,
-                'price': 937,
-                'last_price': 937,
-                'procent': 0.001,
-                'who_last_send': None,
-                'winner': None
-            },
-            '5': {
-                'status': 0,
-                'time': 3600,
-                'price': 5001,
-                'last_price': 5001,
-                'procent': 0.001,
-                'who_last_send': None,
-                'winner': None
-            },
+    def __init__(self, login: str, password: str):
+        self.active = 1
+        self.session = requests.Session()
+        resp = self.session.get("https://old.edu.pp24.dev/api/Cssp/Authentication/BeginAuthentication?type=Password")
+        token = resp.text
+        token = token[1:-1]
+        self.__login(password, login, token)
+
+    def __login(self, password: str, login: str, token: str):
+        url = "https://old.edu.pp24.dev/api/Cssp/Authentication/PerformAuthentication"
+        data = {"token": token, "operation": "LogIn",
+                "argument": {"values": {"login": f"{login}", "password": f"{password}"}}}
+        resp = self.session.post(url, json=data)
+        resp = resp.json()
+        if (resp['isSessionComplete'] == True):
+            print("We succesfully login")
+            url = "https://old.edu.pp24.dev/api/Cssp/Authentication/CheckAuthentication"
+            resp = self.session.get(url)  # work with this!
+            resp = resp.json()
+            print(resp)
+        else:
+            print("Something wrong with login =(")
+
+    def getItem(self, id: str):
+        URL = f"https://edu.pp24.dev/newapi/api/Auction/Get?auctionId={id}"
+        response = self.session.get(URL)
+        response = response.json()  # work with this!
+        return response
+
+    def getBet(self, id: str, rowversion: str, value: str):
+        url = "https://edu.pp24.dev/newapi/api/Auction/CreateBet"
+        data = {
+            'auctionId': id,
+            'rowVersion': rowversion,
+            'value': value
         }
-
-    def __upd(self):
-        self.__catsessions['1']['price'] = 200  # API
-
-    def getItem(self, id):
-        self.__upd()
-        return self.__catsessions.get(id, {})
+        resp = self.session.post(url, json=data)  # work this!
