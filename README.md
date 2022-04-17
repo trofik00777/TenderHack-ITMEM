@@ -1,7 +1,7 @@
 # TenderHack-ITMEM
 ## Бот для котировочных сессий
 Команда:
-- [Рахмани Асад](https://github.com/BuryatyaTut)
+- [Асад Рахмани](https://github.com/BuryatyaTut)
 - [Денис Жимоедов](https://github.com/denchicez)
 - [Кирилл Санников](https://github.com/KirillSanik)
 - [Максим Трофимов](https://github.com/trofik00777)
