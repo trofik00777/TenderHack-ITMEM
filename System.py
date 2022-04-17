@@ -12,11 +12,12 @@ class System:
         except requests.ConnectionError:
             return 0  # не работает
 
-    def __init__(self, login: str, password: str, receive_mail, log: bool = False):
+    def __init__(self, login: str, password: str, receive_mail, telegram_message, log: bool = False):
         self.active = 1
         self.log = log
+        self.telegram_message = telegram_message
         self.session = requests.Session()
-        self.sender = Sender(receive_mail)
+        self.sender = Sender(receive_mail, telegram_message)
         if self.log:
             print("Start login in account")
         while True:

@@ -32,7 +32,7 @@ class Player:
         time = datetime.strptime(data['endDate'], "%d.%m.%Y %H:%M:%S")
         time_now = datetime.now()
         timedelta = (time - time_now).seconds
-        if (not self.notification and timedelta <= float(self.timetosend)):
+        if (not self.notification and timedelta <= self.timetosend):
             self.notification = 1
             self.system.sender.notification(self.sessionid, timedelta)
         price = data['nextCost']

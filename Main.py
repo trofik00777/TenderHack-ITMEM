@@ -6,7 +6,7 @@ def main():
     login = "pp.user.supplier@gmail.com"
     password = "Ulcc1044"
     mail = "denchicez@gmail.com"
-    system = System(login, password, mail, log=True)
+    system = System(login, password, mail, "", log=True)
     if system.error != 0:
         print("end of program")
         return
