@@ -4,8 +4,8 @@ from time import sleep
 
 
 class Player:
-    def __init__(self, id: str, minprice: str, timetosend: str, delay, system):
-        self.id = id
+    def __init__(self, sessionid: str, minprice: float, timetosend: float, delay: float, system):
+        self.sessionid = sessionid
         self.minprice = minprice
         self.timetosend = timetosend
         self.status = 0  # 0 - в ожидание, 1 - выйгран, 2 - проигран
@@ -15,12 +15,12 @@ class Player:
         self.firstdelay = delay
 
     def play(self):
-        data = self.system.getItem(self.id)
+        data = self.system.getItem(self.sessionid)
         while data.get('message', '') == 'Необходимо пройти проверку':
-            sleep(10)
+            sleep(self.delay)
             if self.system.log:
                 print("We are waiting")
-            data = self.system.getItem(self.id)
+            data = self.system.getItem(self.sessionid)
         version = data['rowVersion']
         bets = data['bets']
         if (len(bets) == 0):
@@ -34,35 +34,27 @@ class Player:
         timedelta = (time - time_now).seconds
         if (not self.notification and timedelta <= float(self.timetosend)):
             self.notification = 1
-            self.system.sender.notification(id, timedelta)
+            self.system.sender.notification(self.sessionid, timedelta)
         price = data['nextCost']
         if (status != "Активная"):
-            if (winner == None):
+            if (winner is None):
                 return 1
             else:
                 return 2
-        if (float(price) >= float(self.minprice)):
-            if (timedelta <= float(self.delay)):
-                if (winner == None):
-                    if self.system.log:
-                        print("We need bit it!")
-                    sleep(5)
-                    self.system.getBet(self.id, version, cost)
-                    self.delay = self.firstdelay + randint(-timedelta * 0.01, timedelta * 0.01)
-                    self.delay = max(self.delay, 60)
-                    self.delay = min(self.delay, timedelta - 60)
-
-                else:
-                    if self.system.log:
-                        print("We last player")
-                    sleep(10)
-                return 0
+        sleep(self.delay)
+        if (float(price) >= self.minprice):
+            if (winner is None):
+                if self.system.log:
+                    print("We need bit it!")
+                self.system.getBet(self.sessionid, version, cost)
+                self.delay = self.firstdelay + randint(int(-timedelta * 0.01), int(timedelta * 0.01))
+                self.delay = max(self.delay, 60)
+                self.delay = min(self.delay, timedelta - 60)
             else:
-                print("sleep")
-                sleep(5)
-                return 0
+                if self.system.log:
+                    print("We last player")
+            return 0
         else:
             if self.system.log:
                 print("This not for us")
-            sleep(5)
             return 2
