@@ -17,6 +17,9 @@ class Regulator:
         del self.threads[sessionid]
         await self.system.sender.template(result, sessionid)
 
+    # async def analyze(self, sessionid: str):
+    #     predict = await Player(sessionid, price, timedelta, delay, self.system).analyze()
+
     async def newsession(self, sessionid: str, price: float, sendmessage: float, delay: float):
         if sessionid not in self.threads:
             self.threads[sessionid] = asyncio.create_task(self.play(sessionid, price, sendmessage, delay))
