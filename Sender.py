@@ -26,6 +26,7 @@ class Sender:
         print("We end send email")
 
     def template(self, status: int, href: str):
+        href = "https://edu.pp24.dev/auction/" + href
         html = ""
         if (status == 1):
             html = f"""\
@@ -51,4 +52,18 @@ class Sender:
                     """
         else:
             print("Problem with sender")
+        self.sendMessage(html)
+
+    def notification(self, href: str, timedelta: str):
+        href = "https://edu.pp24.dev/auction/" + href
+        html = f"""\
+                <html>
+                  <body>
+                    <p>Session soon will be close , It's near {timedelta} seconds to end <br>
+                       Check you progress in 
+                       <a href="{href}">click</a>
+                    </p>
+                  </body>
+                </html>
+                """
         self.sendMessage(html)
