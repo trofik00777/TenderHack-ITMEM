@@ -40,13 +40,37 @@ async def help(message: types.Message):
     await message.answer('\n'.join(text), parse_mode="MarkDownV2")
 
 
+@dp.callback_query_handler(lambda x: x.data.endswith("del"))
+async def del_bot(call: types.CallbackQuery):
+
+    # await call.message.answer(str(randint(1, 10)))
+    bot_id = call.data.split("_")[1]
+    await delete_bot(call.from_user.id, bot_id, call)
+    await call.message.edit_reply_markup(reply_markup=None)
+    await call.answer(text=f"Бот успешно удален из сессии id={bot_id}", show_alert=True)
+    # или просто await call.answer()
+
+
 @dp.message_handler(commands="get_active")  # coming soon
 async def get_active(message: types.Message):
     user_id = message.from_user.id
     if user_id in USERS:
         regulator = USERS[user_id]
-        regulator.getactivities()
-
+        bots = regulator.getactivities()
+        # bots = [1, 2, 3]
+        keyboard = types.InlineKeyboardMarkup(row_width=4)
+        for index, curr_bot_id in enumerate(bots):
+            line = []
+            line.append(types.InlineKeyboardButton(text=f"{curr_bot_id}", callback_data=f"{index}_{curr_bot_id}"))
+            line.append(types.InlineKeyboardButton(text=f"settings", callback_data=f"{index}_{curr_bot_id}_settings"))
+            line.append(types.InlineKeyboardButton(text=f"del", callback_data=f"{index}_{curr_bot_id}_del"))
+            line.append(types.InlineKeyboardButton(text=f"analyze", callback_data=f"{index}_{curr_bot_id}_analyze"))
+            keyboard.add(*line)
+        a = []
+        for i in range(5):
+            pass
+        # keyboard.add(*a)
+        await message.answer("Test", reply_markup=keyboard)
         # await message.reply(f"Бот успешно добавлен в сессию `id={id}`!", parse_mode="MarkDownV2")
     else:
         await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
@@ -59,7 +83,10 @@ async def login(message: types.Message):
     log = "pp.user.supplier@gmail.com"
     passw = "Ulcc1044"
     email = "denchicez@gmail.com"
-    USERS[message.from_user.id] = Regulator(System(log, passw, email, message))
+    system = System(log, passw, email, message)
+    print("fghyj")
+    await system.create()
+    USERS[message.from_user.id] = Regulator(system)
     print(USERS)
     await message.answer(f"Вы успешно зарегистрированы `{log}`", parse_mode="MarkDownV2")
 
@@ -76,7 +103,7 @@ async def add_bot(message: types.Message):
         regulator = USERS[user_id]
         price = DEFAULT_PRICE if price == "-" else price
         time = DEFAULT_TIME if time == "-" else time
-        regulator.newsession(sessionid=id, price=price, sendmessage=sendmessage, delay=time)
+        await regulator.newsession(sessionid=id, price=price, sendmessage=sendmessage, delay=time)
 
         await message.reply(fr"Бот успешно добавлен в сессию `id={id}`\!", parse_mode="MarkDownV2")
     else:
@@ -86,15 +113,31 @@ async def add_bot(message: types.Message):
 
 @dp.message_handler(commands="del")
 async def del_bot(message: types.Message):
-    user_id = message.from_user.id
+    try:
+        await delete_bot(message.from_user.id, message.text.split()[1], message)
+    except:
+        print("bad input for delete")
+    # user_id = message.from_user.id
+    # if user_id in USERS:
+    #     regulator = USERS[user_id]
+    #     try:
+    #         regulator.kill(message.text.split()[1])
+    #     except:
+    #         print("bad del...")
+    # else:
+    #     await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
+    #                         parse_mode="MarkDownV2")
+
+
+async def delete_bot(user_id, bot_id, message):
     if user_id in USERS:
         regulator = USERS[user_id]
         try:
-            regulator.kill(message.text.split()[1])
+            await regulator.kill(bot_id)
         except:
             print("bad del...")
     else:
-        await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
+        await message.answer(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
                             parse_mode="MarkDownV2")
 
 
