@@ -12,7 +12,7 @@ class Sender:
         self.password = password
         self.receiver_email = receiver_email
 
-    def sendMessage(self, html):
+    async def sendMessage(self, html):
         try:
             print("Start send mail")
             message = MIMEMultipart("alternative")
@@ -30,10 +30,10 @@ class Sender:
             print("Something went wrong")
             print(e)
 
-    def send_telegram(self):
-        self.telegram_message.answer(f"Oops...", parse_mode="MarkDownV2")
+    async def send_telegram(self):
+        await self.telegram_message.answer(f"Oops...", parse_mode="MarkDownV2")
 
-    def template(self, status: int, href: str):
+    async def template(self, status: int, href: str):
         href = "https://edu.pp24.dev/auction/" + href
         html = ""
         if (status == 1):
@@ -60,9 +60,9 @@ class Sender:
                     """
         else:
             print("Problem with sender")
-        self.sendMessage(html)
+        await self.sendMessage(html)
 
-    def notification(self, href: str, timedelta: str):
+    async def notification(self, href: str, timedelta: str):
         print(href)
         href = "https://edu.pp24.dev/auction/" + href
         html = f"""\
@@ -75,4 +75,4 @@ class Sender:
                   </body>
                 </html>
                 """
-        self.sendMessage(html)
+        await self.sendMessage(html)
