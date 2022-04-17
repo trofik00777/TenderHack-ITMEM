@@ -28,9 +28,9 @@ class Sender:
     async def template(self, status: int, href: str):
         href = "https://edu.pp24.dev/auction/" + href
         html = ""
-        if (status == 1):
+        if status == 1:
             html = f"""You are win, Check you progress in {href}"""
-        elif (status == 2):
+        elif status == 2:
             html = f"""We leave session, Check you progress in {href}"""
         else:
             print("Problem with sender")
@@ -38,7 +38,7 @@ class Sender:
 
     async def notification(self, href: str, timedelta: str):
         href = "https://edu.pp24.dev/auction/" + href
-        html = f"""Session soon will be close , It's near {timedelta} seconds to end <br>
+        html = f"""Session soon will be close , It's near {timedelta} seconds to end
                        Check you progress in {href}
                 """
         await self.sendMessage(html)

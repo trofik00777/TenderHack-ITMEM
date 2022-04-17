@@ -11,7 +11,7 @@ def main():
         print("end of program")
         return
     regulator = Regulator(system)
-    while (True):
+    while True:
         id = input("Input id of cat session\n")
         price = float(input("Input price of cat session\n"))
         sendmessage = float(input("Input time to send annatation about end of cat session\n"))

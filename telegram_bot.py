@@ -1,6 +1,7 @@
 #!venv/bin/python
 # import asyncio
 import logging
+
 from aiogram import Bot, Dispatcher, executor, types
 
 from Regulator import Regulator
@@ -28,7 +29,8 @@ async def set_default_commands():
 async def help(message: types.Message):
     commands = [["help", "(Помощь)"],
                 ["login <login> <password> <email>", "(Вход в систему)"],
-                ["add <id сессии> <минимальная цена> <время отправки сообщения> <X минут на обновление цены>", "(Добавить бота в сессию)"],
+                ["add <id сессии> <минимальная цена> <время отправки сообщения> <X минут на обновление цены>",
+                 "(Добавить бота в сессию)"],
                 ["del <id сессии>", "(Удалить бота из сессии)"],
                 # ["menu_bots", "(Управление ботами)"],
                 ["get_active", "(Список текущих сессий)"]]
@@ -42,27 +44,18 @@ async def help(message: types.Message):
 
 @dp.callback_query_handler(lambda x: x.data.endswith("del"))
 async def del_bot(call: types.CallbackQuery):
-
-    # await call.message.answer(str(randint(1, 10)))
     bot_id = call.data.split("_")[1]
     await delete_bot(call.from_user.id, bot_id, call)
     await call.message.edit_reply_markup(reply_markup=None)
     await call.answer(text=f"Бот успешно удален из сессии id={bot_id}", show_alert=True)
-    # или просто await call.answer()
 
 
 @dp.callback_query_handler(lambda x: x.data.endswith("settings"))
 async def del_bot(call: types.CallbackQuery):
-
-    # await call.message.answer(str(randint(1, 10)))
     bot_id = call.data.split("_")[1]
-    # await delete_bot(call.from_user.id, bot_id, call)
-
     await call.message.edit_reply_markup(reply_markup=None)
-    lines= [f"Используйте команды:"]
-    lines.append(f"`/settings_update {bot_id} <new_price> <new_send_time> <new_delay_X>`")
+    lines = ["Используйте команды:", f"`/settings_update {bot_id} <new_price> <new_send_time> <new_delay_X>`"]
     await call.message.answer(text="\n".join(lines), parse_mode="MArkDownV2")
-    # или просто await call.answer()
 
 
 @dp.message_handler(commands="settings_update")
@@ -75,8 +68,9 @@ async def get_active(message: types.Message):
         if user_id in USERS:
             try:
                 id, price, sendmessage, time = message.text.split()[1:]
-            except:
+            except Exception as e:
                 await message.answer("Что-то пошло не так...")
+                print(e)
                 return
             regulator = USERS[user_id]
             price = DEFAULT_PRICE if price == "-" else price
@@ -92,7 +86,7 @@ async def get_active(message: types.Message):
         print(e)
 
 
-@dp.message_handler(commands="get_active")  # coming soon
+@dp.message_handler(commands="get_active")
 async def get_active(message: types.Message):
     user_id = message.from_user.id
     if user_id in USERS:
@@ -102,18 +96,11 @@ async def get_active(message: types.Message):
         count_ = 3
         keyboard = types.InlineKeyboardMarkup(row_width=count_)
         for index, curr_bot_id in enumerate(bots):
-            line = []
-            line.append(types.InlineKeyboardButton(text=f"{curr_bot_id}", callback_data=f"{index}_{curr_bot_id}"))
-            line.append(types.InlineKeyboardButton(text=f"settings", callback_data=f"{index}_{curr_bot_id}_settings"))
-            line.append(types.InlineKeyboardButton(text=f"del", callback_data=f"{index}_{curr_bot_id}_del"))
-            # line.append(types.InlineKeyboardButton(text=f"analyze", callback_data=f"{index}_{curr_bot_id}_analyze"))
+            line = [types.InlineKeyboardButton(text=f"{curr_bot_id}", callback_data=f"{index}_{curr_bot_id}"),
+                    types.InlineKeyboardButton(text=f"settings", callback_data=f"{index}_{curr_bot_id}_settings"),
+                    types.InlineKeyboardButton(text=f"del", callback_data=f"{index}_{curr_bot_id}_del")]
             keyboard.add(*line)
-        # a = []
-        # for i in range(5):
-        #     pass
-        # keyboard.add(*a)
         await message.answer("List of bots:", reply_markup=keyboard)
-        # await message.reply(f"Бот успешно добавлен в сессию `id={id}`!", parse_mode="MarkDownV2")
     else:
         await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
                             parse_mode="MarkDownV2")
@@ -138,8 +125,9 @@ async def add_bot(message: types.Message):
     if user_id in USERS:
         try:
             id, price, sendmessage, time = message.text.split()[1:]
-        except:
+        except Exception as e:
             await message.answer("Что-то пошло не так...")
+            print(e)
             return
         regulator = USERS[user_id]
         price = DEFAULT_PRICE if price == "-" else price
@@ -156,18 +144,9 @@ async def add_bot(message: types.Message):
 async def del_bot(message: types.Message):
     try:
         await delete_bot(message.from_user.id, message.text.split()[1], message)
-    except:
+    except Exception as e:
         print("bad input for delete")
-    # user_id = message.from_user.id
-    # if user_id in USERS:
-    #     regulator = USERS[user_id]
-    #     try:
-    #         regulator.kill(message.text.split()[1])
-    #     except:
-    #         print("bad del...")
-    # else:
-    #     await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
-    #                         parse_mode="MarkDownV2")
+        print(e)
 
 
 async def delete_bot(user_id, bot_id, message):
@@ -175,35 +154,20 @@ async def delete_bot(user_id, bot_id, message):
         regulator = USERS[user_id]
         try:
             await regulator.kill(bot_id)
-        except:
+        except Exception as e:
             print("bad del...")
+            print(e)
     else:
         await message.answer(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
-                            parse_mode="MarkDownV2")
+                             parse_mode="MarkDownV2")
 
 
 @dp.message_handler(commands="start")
 async def cmd_start(message: types.Message):
-    # keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    # buttons = ["/test1", "/test2"]
-    # keyboard.add(*buttons)
     await message.answer(r"Добро пожаловать\! Используйте команду `/login <login> <password> <email>` для регистрации",
                          parse_mode="MarkDownV2")
 
 
-# async def main():
-#     await set_default_commands()
-#
-#     # Запуск поллинга
-#     # await dp.skip_updates()  # пропуск накопившихся апдейтов (необязательно)
-#     await dp.start_polling()
-#
-#
-# if __name__ == '__main__':
-#     asyncio.run(main())
-
-
 if __name__ == "__main__":
-    # Запуск бота
     # set_default_commands()
     executor.start_polling(dp, skip_updates=True)

@@ -59,7 +59,7 @@ class System:
                 break
             if self.log:
                 print("Problem with internet")
-        if (resp['isSessionComplete'] == True):
+        if resp['isSessionComplete'] == True:
             url = "https://old.edu.pp24.dev/api/Cssp/Authentication/CheckAuthentication"
             while True:
                 if await self.__checkNet():
@@ -68,7 +68,7 @@ class System:
                             if self.log:
                                 print(await response.text())
                             resp = await response.json()
-                            if (resp['isAuthenticated'] == False):
+                            if resp['isAuthenticated'] == False:
                                 if self.log:
                                     print("Failed login")
                                 return -1

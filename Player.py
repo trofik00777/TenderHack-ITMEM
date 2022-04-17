@@ -23,7 +23,7 @@ class Player:
             data = await self.system.getItem(self.sessionid)
         version = data['rowVersion']
         bets = data['bets']
-        if (len(bets) == 0):
+        if len(bets) == 0:
             winner = None
         else:
             winner = data['bets'][0]['supplier']['id']
@@ -32,14 +32,14 @@ class Player:
         time = datetime.strptime(data['endDate'], "%d.%m.%Y %H:%M:%S")
         time_now = datetime.now()
         timedelta = (time - time_now).seconds
-        if (not self.notification and timedelta <= float(self.timetosend)):
+        if not self.notification and timedelta <= float(self.timetosend):
             if self.system.log:
                 print("Start send!")
             self.notification = 1
             await self.system.sender.notification(self.sessionid, timedelta)
         price = data['nextCost']
-        if (status != "Активная"):
-            if (winner is None):
+        if status != "Активная":
+            if winner is None:
                 return 1
             else:
                 return 2
@@ -48,8 +48,8 @@ class Player:
         await sleep(self.delay)
         if self.system.log:
             print("End delay")
-        if (float(price) >= self.minprice):
-            if (winner is None):
+        if float(price) >= self.minprice:
+            if winner is None:
                 if self.system.log:
                     print("We need bit it!")
                 await self.system.getBet(self.sessionid, version, cost)
