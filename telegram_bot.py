@@ -28,7 +28,7 @@ async def set_default_commands():
 async def help(message: types.Message):
     commands = [["help", "(Помощь)"],
                 ["login <login> <password> <email>", "(Вход в систему)"],
-                ["add <id сессии>", "(Добавить бота в сессию)"],
+                ["add <id сессии> <минимальная цена> <время отправки сообщения> <X минут на обновление цены>", "(Добавить бота в сессию)"],
                 ["del <id сессии>", "(Удалить бота из сессии)"],
                 # ["menu_bots", "(Управление ботами)"],
                 ["get_active", "(Список текущих сессий)"]]
@@ -51,26 +51,68 @@ async def del_bot(call: types.CallbackQuery):
     # или просто await call.answer()
 
 
+@dp.callback_query_handler(lambda x: x.data.endswith("settings"))
+async def del_bot(call: types.CallbackQuery):
+
+    # await call.message.answer(str(randint(1, 10)))
+    bot_id = call.data.split("_")[1]
+    # await delete_bot(call.from_user.id, bot_id, call)
+
+    await call.message.edit_reply_markup(reply_markup=None)
+    lines= [f"Используйте команды:"]
+    lines.append(f"`/settings_update {bot_id} <new_price> <new_send_time> <new_delay_X>`")
+    await call.message.answer(text="\n".join(lines), parse_mode="MArkDownV2")
+    # или просто await call.answer()
+
+
+@dp.message_handler(commands="settings_update")
+async def get_active(message: types.Message):
+    try:
+        bot_id = message.text.split()[1]
+        await delete_bot(message.from_user.id, bot_id, message)
+
+        user_id = message.from_user.id
+        if user_id in USERS:
+            try:
+                id, price, sendmessage, time = message.text.split()[1:]
+            except:
+                await message.answer("Что-то пошло не так...")
+                return
+            regulator = USERS[user_id]
+            price = DEFAULT_PRICE if price == "-" else price
+            time = DEFAULT_TIME if time == "-" else time
+            await regulator.newsession(sessionid=id, price=price, sendmessage=sendmessage, delay=time)
+
+            await message.reply(fr"Бот успешно изменен\!", parse_mode="MarkDownV2")
+        else:
+            await message.reply(
+                r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
+                parse_mode="MarkDownV2")
+    except Exception as e:
+        print(e)
+
+
 @dp.message_handler(commands="get_active")  # coming soon
 async def get_active(message: types.Message):
     user_id = message.from_user.id
     if user_id in USERS:
         regulator = USERS[user_id]
-        bots = regulator.getactivities()
+        bots = await regulator.getactivities()
         # bots = [1, 2, 3]
-        keyboard = types.InlineKeyboardMarkup(row_width=4)
+        count_ = 3
+        keyboard = types.InlineKeyboardMarkup(row_width=count_)
         for index, curr_bot_id in enumerate(bots):
             line = []
             line.append(types.InlineKeyboardButton(text=f"{curr_bot_id}", callback_data=f"{index}_{curr_bot_id}"))
             line.append(types.InlineKeyboardButton(text=f"settings", callback_data=f"{index}_{curr_bot_id}_settings"))
             line.append(types.InlineKeyboardButton(text=f"del", callback_data=f"{index}_{curr_bot_id}_del"))
-            line.append(types.InlineKeyboardButton(text=f"analyze", callback_data=f"{index}_{curr_bot_id}_analyze"))
+            # line.append(types.InlineKeyboardButton(text=f"analyze", callback_data=f"{index}_{curr_bot_id}_analyze"))
             keyboard.add(*line)
-        a = []
-        for i in range(5):
-            pass
+        # a = []
+        # for i in range(5):
+        #     pass
         # keyboard.add(*a)
-        await message.answer("Test", reply_markup=keyboard)
+        await message.answer("List of bots:", reply_markup=keyboard)
         # await message.reply(f"Бот успешно добавлен в сессию `id={id}`!", parse_mode="MarkDownV2")
     else:
         await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
@@ -84,7 +126,6 @@ async def login(message: types.Message):
     passw = "Ulcc1044"
     email = "denchicez@gmail.com"
     system = System(log, passw, email, message)
-    print("fghyj")
     await system.create()
     USERS[message.from_user.id] = Regulator(system)
     print(USERS)

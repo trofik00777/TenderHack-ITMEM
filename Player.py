@@ -36,7 +36,7 @@ class Player:
             if self.system.log:
                 print("Start send!")
             self.notification = 1
-            # await self.system.sender.notification(self.sessionid, timedelta)
+            await self.system.sender.notification(self.sessionid, timedelta)
         price = data['nextCost']
         if (status != "Активная"):
             if (winner is None):

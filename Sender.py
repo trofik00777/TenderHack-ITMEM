@@ -1,7 +1,6 @@
-import smtplib
-import ssl
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from aiohttp import ClientSession
+
+from config import BOT_TOKEN
 
 
 class Sender:
@@ -14,18 +13,11 @@ class Sender:
 
     async def sendMessage(self, html):
         try:
-            print("Start send mail")
-            message = MIMEMultipart("alternative")
-            message["Subject"] = "!!!Attention!!!"
-            message["From"] = self.sender_email
-            message["To"] = self.receiver_email
-            part1 = MIMEText(html, "html")
-            message.attach(part1)
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-                server.login(self.sender_email, self.password)
-                server.sendmail(self.sender_email, self.receiver_email, message.as_string())
-            print("We end send email")
+            async with ClientSession() as session:
+                async with session.post(url='https://api.telegram.org/bot{0}/sendMessage'.format(BOT_TOKEN),
+                                        data={'chat_id': self.telegram_message.from_user.id,
+                                              'text': html}) as resp:
+                    print(await resp.text())
         except Exception as e:
             print("Something went wrong")
             print(e)
@@ -37,42 +29,16 @@ class Sender:
         href = "https://edu.pp24.dev/auction/" + href
         html = ""
         if (status == 1):
-            html = f"""\
-                <html>
-                  <body>
-                    <p>You are win,<br>
-                       Check you progress in 
-                       <a href="{href}">click</a>
-                    </p>
-                  </body>
-                </html>
-                """
+            html = f"""You are win, Check you progress in {href}"""
         elif (status == 2):
-            html = f"""
-                    <html>
-                      <body>
-                        <p>We go out from this catsession,<br>
-                           Too low many for you which you can earn =(. Saw you progress in 
-                           <a href="{href}">click</a>
-                        </p>
-                      </body>
-                    </html>
-                    """
+            html = f"""We leave session, Check you progress in {href}"""
         else:
             print("Problem with sender")
         await self.sendMessage(html)
 
     async def notification(self, href: str, timedelta: str):
-        print(href)
         href = "https://edu.pp24.dev/auction/" + href
-        html = f"""\
-                <html>
-                  <body>
-                    <p>Session soon will be close , It's near {timedelta} seconds to end <br>
-                       Check you progress in 
-                       <a href="{href}">click</a>
-                    </p>
-                  </body>
-                </html>
+        html = f"""Session soon will be close , It's near {timedelta} seconds to end <br>
+                       Check you progress in {href}
                 """
         await self.sendMessage(html)

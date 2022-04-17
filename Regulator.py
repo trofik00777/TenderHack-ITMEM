@@ -15,7 +15,7 @@ class Regulator:
             result = await player.play()
         print(f"RESULT IS {result}")
         del self.threads[sessionid]
-        # self.system.sender.template(result, sessionid)
+        self.system.sender.template(result, sessionid)
 
     async def newsession(self, sessionid: str, price: float, sendmessage: float, delay: float):
         if (sessionid not in self.threads):
@@ -30,5 +30,6 @@ class Regulator:
     async def kill(self, sessionid: str):
         if (sessionid in self.threads):
             self.threads[sessionid].cancel()
+            del self.threads[sessionid]
         else:
             print("Can't find this id to kill someone")

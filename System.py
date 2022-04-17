@@ -33,6 +33,7 @@ class System:
                             print("Succesfully login")
                         else:
                             print("Unseccusfully login")
+                        break
             if self.log:
                 print("Problem with internet")
 
