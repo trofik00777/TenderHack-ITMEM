@@ -13,9 +13,9 @@ def main():
     regulator = Regulator(system)
     while (True):
         id = input("Input id of cat session\n")
-        price = input("Input price of cat session\n")
-        sendmessage = input("Input time to send annatation about end of cat session\n")
-        delay = input("Input about time to get bit. It must in be [60 : endTime]\n")
+        price = float(input("Input price of cat session\n"))
+        sendmessage = float(input("Input time to send annatation about end of cat session\n"))
+        delay = float(input("Input about time to get bit. It must in be [60 : endTime]\n"))
 
         regulator.newsession(id, price, sendmessage, delay)
 
