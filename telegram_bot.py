@@ -96,7 +96,7 @@ async def get_active(message: types.Message):
         count_ = 3
         keyboard = types.InlineKeyboardMarkup(row_width=count_)
         for index, curr_bot_id in enumerate(bots):
-            line = [types.InlineKeyboardButton(text=f"{curr_bot_id}", callback_data=f"{index}_{curr_bot_id}"),
+            line = [types.InlineKeyboardButton(text=f"{curr_bot_id}", callback_data=f"{index}_{curr_bot_id}_link"),
                     types.InlineKeyboardButton(text=f"settings", callback_data=f"{index}_{curr_bot_id}_settings"),
                     types.InlineKeyboardButton(text=f"del", callback_data=f"{index}_{curr_bot_id}_del")]
             keyboard.add(*line)
@@ -104,6 +104,12 @@ async def get_active(message: types.Message):
     else:
         await message.reply(r"Для начала зарегистрируйтесь\! Используйте команду `/login <login> <password> <email>`",
                             parse_mode="MarkDownV2")
+
+
+@dp.callback_query_handler(lambda x: x.data.endswith("link"))
+async def del_bot(call: types.CallbackQuery):
+    bot_id = call.data.split("_")[1]
+    await call.answer(text=f"Ссылка на сессию: https://edu.pp24.dev/auction/{bot_id}", show_alert=True)
 
 
 @dp.message_handler(commands="login")

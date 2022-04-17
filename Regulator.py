@@ -15,7 +15,7 @@ class Regulator:
             result = await player.play()
         print(f"RESULT IS {result}")
         del self.threads[sessionid]
-        self.system.sender.template(result, sessionid)
+        await self.system.sender.template(result, sessionid)
 
     async def newsession(self, sessionid: str, price: float, sendmessage: float, delay: float):
         if sessionid not in self.threads:
