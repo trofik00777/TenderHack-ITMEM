@@ -8,18 +8,18 @@ class Regulator:
         self.system = system
         self.threads = {}
 
-    def play(self, id: str, price: str, timedelta: str, delay):  # асинхронная
+    def play(self, sessionid: str, price: float, timedelta: float, delay: float):  # асинхронная
         result = 0
-        player = Player(id, price, timedelta, delay, self.system)
+        player = Player(sessionid, price, timedelta, delay, self.system)
         while (result == 0):
             result = player.play()
-        del self.threads[id]
-        self.system.sender.template(result, id)
+        del self.threads[sessionid]
+        self.system.sender.template(result, sessionid)
 
-    def newsession(self, id: str, price: str, sendmessage: str, delay):
-        if (id not in self.threads):
-            self.threads[id] = Process(target=self.play, args=(id, price, sendmessage, delay))
-            self.threads[id].start()
+    def newsession(self, sessionid: str, price: float, sendmessage: float, delay: float):
+        if (sessionid not in self.threads):
+            self.threads[sessionid] = Process(target=self.play, args=(sessionid, price, sendmessage, delay))
+            self.threads[sessionid].start()
         else:
             if self.system.log:
                 print("You're now upd this!")
@@ -27,8 +27,8 @@ class Regulator:
     def getactivities(self):
         return self.threads.keys()
 
-    def kill(self, id: str):
-        if (id in self.threads):
-            self.threads[id].kill()
+    def kill(self, sessionid: str):
+        if (sessionid in self.threads):
+            self.threads[sessionid].kill()
         else:
             print("Can't find this id to kill someone")
