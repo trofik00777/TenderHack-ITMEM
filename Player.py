@@ -1,6 +1,6 @@
+from asyncio import sleep
 from datetime import datetime
 from random import randint
-from time import sleep
 
 
 class Player:
@@ -8,19 +8,19 @@ class Player:
         self.sessionid = sessionid
         self.minprice = minprice
         self.timetosend = timetosend
-        self.status = 0  # 0 - в ожидание, 1 - выйгран, 2 - проигран
+        self.status = 0
         self.system = system
-        self.delay = delay
+        self.delay = float(delay)
         self.notification = 0
         self.firstdelay = delay
 
-    def play(self):
-        data = self.system.getItem(self.sessionid)
+    async def play(self):
+        data = await self.system.getItem(self.sessionid)
         while data.get('message', '') == 'Необходимо пройти проверку':
-            sleep(self.delay)
+            await sleep(self.delay)
             if self.system.log:
                 print("We are waiting")
-            data = self.system.getItem(self.sessionid)
+            data = await self.system.getItem(self.sessionid)
         version = data['rowVersion']
         bets = data['bets']
         if (len(bets) == 0):
@@ -32,21 +32,27 @@ class Player:
         time = datetime.strptime(data['endDate'], "%d.%m.%Y %H:%M:%S")
         time_now = datetime.now()
         timedelta = (time - time_now).seconds
-        if (not self.notification and timedelta <= self.timetosend):
+        if (not self.notification and timedelta <= float(self.timetosend)):
+            if self.system.log:
+                print("Start send!")
             self.notification = 1
-            self.system.sender.notification(self.sessionid, timedelta)
+            # await self.system.sender.notification(self.sessionid, timedelta)
         price = data['nextCost']
         if (status != "Активная"):
             if (winner is None):
                 return 1
             else:
                 return 2
-        sleep(self.delay)
+        if self.system.log:
+            print("Wait delay")
+        await sleep(self.delay)
+        if self.system.log:
+            print("End delay")
         if (float(price) >= self.minprice):
             if (winner is None):
                 if self.system.log:
                     print("We need bit it!")
-                self.system.getBet(self.sessionid, version, cost)
+                await self.system.getBet(self.sessionid, version, cost)
                 self.delay = self.firstdelay + randint(int(-timedelta * 0.01), int(timedelta * 0.01))
                 self.delay = max(self.delay, 60)
                 self.delay = min(self.delay, timedelta - 60)
