@@ -55,6 +55,7 @@ class Sender:
         self.sendMessage(html)
 
     def notification(self, href: str, timedelta: str):
+        print(href)
         href = "https://edu.pp24.dev/auction/" + href
         html = f"""\
                 <html>
