@@ -14,8 +14,10 @@ def main():
     while (True):
         id = input("Input id of cat session\n")
         price = input("Input price of cat session\n")
-        timedelta = input("Input time to end cat session\n")
-        regulator.newsession(id, price, timedelta)
+        sendmessage = input("Input time to send annatation about end of cat session\n")
+        delay = input("Input about time to get bit. It must in be [60 : endTime]\n")
+
+        regulator.newsession(id, price, sendmessage, delay)
 
 
 if __name__ == '__main__':
