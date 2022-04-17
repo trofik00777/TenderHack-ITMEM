@@ -5,25 +5,33 @@ from email.mime.text import MIMEText
 
 
 class Sender:
-    def __init__(self, receiver_email, sender_email: str = "thefroggylovers@gmail.com",
+    def __init__(self, receiver_email, telegram_message, sender_email: str = "thefroggylovers@gmail.com",
                  password: str = "a4+hPuC!X5j_tQKk*9geaQB"):
         self.sender_email = sender_email  # Enter your address
+        self.telegram_message = telegram_message
         self.password = password
         self.receiver_email = receiver_email
 
     def sendMessage(self, html):
-        print("Start send mail")
-        message = MIMEMultipart("alternative")
-        message["Subject"] = "!!!Attention!!!"
-        message["From"] = self.sender_email
-        message["To"] = self.receiver_email
-        part1 = MIMEText(html, "html")
-        message.attach(part1)
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(self.sender_email, self.password)
-            server.sendmail(self.sender_email, self.receiver_email, message.as_string())
-        print("We end send email")
+        try:
+            print("Start send mail")
+            message = MIMEMultipart("alternative")
+            message["Subject"] = "!!!Attention!!!"
+            message["From"] = self.sender_email
+            message["To"] = self.receiver_email
+            part1 = MIMEText(html, "html")
+            message.attach(part1)
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                server.login(self.sender_email, self.password)
+                server.sendmail(self.sender_email, self.receiver_email, message.as_string())
+            print("We end send email")
+        except Exception as e:
+            print("Something went wrong")
+            print(e)
+
+    def send_telegram(self):
+        self.telegram_message.answer(f"Oops...", parse_mode="MarkDownV2")
 
     def template(self, status: int, href: str):
         href = "https://edu.pp24.dev/auction/" + href
